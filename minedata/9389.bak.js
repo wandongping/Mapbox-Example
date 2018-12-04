@@ -4,7 +4,7 @@ var config = {
   DYN_URL: "http://datahive.minedata.cn/dynamicdata/",
   OTHER_URL: "http://datahive.minedata.cn/otherdata/",
   MERGE_URL: "http://datahive.minedata.cn/mergeddata/",
-  ACCESS_TOKEN: '<your access token here>',
+  ACCESS_TOKEN: 'ae291ab75d1b42d39ca220cb136b28a4',
   SOLUTION: 9389
 };
 var _style = {
