@@ -2,7 +2,7 @@ var config = {
   API_URL: "http://minedata.cn/minemapapi/v2.0.0/",
   DATA_URL: "http://datahive.minedata.cn/data/",
   MERGE_URL: "http://datahive.minedata.cn/mergeddata/",
-  ACCESS_TOKEN: '25cc55a69ea7422182d00d6b7c0ffa93',
+  ACCESS_TOKEN: '<your access token here>',
   SOLUTION: 2365
 };
 var _style = {
