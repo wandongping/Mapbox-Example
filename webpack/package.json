@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.18.0",
     "mapbox-gl": "^0.52.0",
     "mapbox-gl-infobox": "^1.0.3"
   },
