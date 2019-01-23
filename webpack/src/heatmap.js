@@ -22,13 +22,13 @@ map.addControl(new mapboxgl.GeolocateControl());
 map.on('load', function () {
   map.addSource('earthquakes', {
     type: 'vector',
-    url: 'mapbox://huanglii.cjr4wlles07ot32t7j3dq5hza-9dzmx'
+    url: 'mapbox://huanglii.d41k5fmy'
   });
   map.addLayer({
     "id": "earthquakes-heat",
     "type": "heatmap",
     "source": "earthquakes",
-    "source-layer": "earthquakes-43208",
+    "source-layer": "earthquakes-cs3906",
     "maxzoom": 9,
     "paint": {
       // Increase the heatmap weight based on frequency and property magnitude
