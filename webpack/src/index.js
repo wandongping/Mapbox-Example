@@ -8,8 +8,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import 'mapbox-gl-infobox/styles.css'
 import './style.css';
 
-
-mapboxgl.accessToken = 'pk.eyJ1IjoiaHVhbmdsaWkiLCJhIjoiY2ptbjJsZXRsMHBlNzNsbGIycTk3eWU0biJ9.Pj_8_ER8nD7UQSSeOg4JZA';
+import token from './access.token.js';
+mapboxgl.accessToken = token;
 
 const map = new mapboxgl.Map({
   container: 'map',

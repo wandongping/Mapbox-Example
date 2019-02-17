@@ -5,8 +5,6 @@ import './style.css';
 
 import token from './access.token.js';
 
-console.log(token);
-
 mapboxgl.accessToken = token;
 
 const map = new mapboxgl.Map({
