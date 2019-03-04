@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Mapbox-Example</title>
+  <link rel="stylesheet" href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="./plugins/windy.js"></script>
+</head>
+
+<body>
+  <canvas id="windCanvas" style="display: none;">不支持canvas</canvas>
+  <div id="map"></div>
+
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaHVhbmdsaWkiLCJhIjoiY2ptbjJsZXRsMHBlNzNsbGIycTk3eWU0biJ9.Pj_8_ER8nD7UQSSeOg4JZA';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/huanglii/cjmn2rlvn0c8u2sl97kkiep6r',
+      center: [104.29318, 35.70000],
+      zoom: 2
+    });
+    map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    var canvas = document.getElementById('windCanvas');
+
+    map.on('load', function () {
+      map.addSource('canvas-source', {
+        "type": "canvas",
+        "canvas": "windCanvas",
+        "animate": true,
+        "coordinates": [
+          [0, 0],
+          [0, 0],
+          [0, 0],
+          [0, 0]
+        ]
+      });
+      map.addLayer({
+        "id": "canvas-layer",
+        "type": "raster",
+        "source": "canvas-source"
+      });
+
+      axios.get('./data/gfs.json').then(function (response) {
+        console.log(response);
+        windy = new Windy({
+          canvas: canvas,
+          data: response.data
+        });
+        redraw();
+      }).catch(function (error) {
+        console.log(error);
+      });
+    });
+
+    map.on('moveend', function () {
+      redraw();
+    });
+
+    function redraw() {
+      var w = map.getCanvas().width;
+      var h = map.getCanvas().height;
+
+      var _xmin = map.getBounds().getWest();
+      var _xmax = map.getBounds().getEast();
+      var _ymin = map.getBounds().getSouth();
+      var _ymax = map.getBounds().getNorth();
+
+      canvas.width = w;
+      canvas.height = h;
+
+      windy.stop();
+
+      map.getSource('canvas-source').setCoordinates([
+        [_xmin, _ymax],
+        [_xmax, _ymax],
+        [_xmax, _ymin],
+        [_xmin, _ymin]
+      ])
+
+      setTimeout(function () {
+        windy.start(
+          [
+            [0, 0],
+            [w, h]
+          ],
+          w,
+          h,
+          [
+            [_xmin, _ymin],
+            [_xmax, _ymax]
+          ]
+        );
+      }, 500);
+    };
+  </script>
+</body>
+
+</html>
