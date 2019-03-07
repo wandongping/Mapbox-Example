@@ -6,7 +6,6 @@
   <title>基础地图</title>
   <link rel="stylesheet" href="http://minedata.cn/minemapapi/v2.0.0/minemap.css">
   <script src="http://minedata.cn/minemapapi/v2.0.0/minemap.js"></script>
-  <script src="http://minedata.cn/minemapapi/v2.0.0/plugins/wind/velocity.js"></script>
   <style>
     html,
     body,
@@ -26,42 +25,19 @@
 <body>
   <div id="map"></div>
   <script>
-    minemap.accessToken = 'ae291ab75d1b42d39ca220cb136b28a4';
-    minemap.solution = 11217;
+    /**
+     * 基本地图加载
+     * 地图缩放级别限制
+     */
+    minemap.accessToken = '<your access token here>';
+    minemap.solution = 9389;
     var map = new minemap.Map({
       container: 'map',
-      style: "http://minedata.cn/service/solu/style/id/11217",
-      center: [108.952, 34.223],
-      zoom: 3,
-      logoControl: !1
+      style: "http://minedata.cn/service/solu/style/id/9389",
+      center: [104.29318, 35.70000],
+      zoom: 4,
+      minZoom: 3
     });
     map.addControl(new minemap.Navigation(), "bottom-right");
-
-    var windVelocity;
-    var windVelocityData = [];
-    map.on('load', function () {
-      minemap.util.getJSON("./data/current-wind-surface-level-gfs-1.0.json", function (t, n) {
-        windVelocityData = n || [];
-        windVelocity.setData(n);
-        windVelocity.drawLayer();
-      });
-
-      Velocity.initVelocityComponent(map);
-      windVelocity = new Velocity({
-        canvas: document.getElementById("windcanvas"),
-        displayValues: !0,
-        displayOptions: {
-          velocityType: "Velocity",
-          position: "bottomleft",
-          emptyString: "No velocity data"
-        },
-        uLineRatio: 2.4,
-        vLineRatio: 1.2,
-        maxVelocity: 10,
-        colorScale: ["rgba(0, 255, 255, 0.5)", "rgba(100, 240, 255, 0.5)", "rgba(135, 225, 255, 0.5)", "rgba(160, 208, 255, 0.5)", "rgba(181, 192, 255, 0.5)", "rgba(198, 173, 255, 0.5)", "rgba(212, 155, 255, 0.5)", "rgba(225, 133, 255, 0.5)", "rgba(236, 109, 255, 0.5)", "rgba(255, 30, 219, 0.5)"],
-        data: windVelocityData,
-        map: map
-      });
-    });
   </script>
 </body>
