@@ -1,0 +1,44 @@
+[
+  {
+    "header": {
+      "parameterCategory": 2,
+      "parameterCategoryName": "Momentum",
+      "parameterNumber": 2,
+      "parameterNumberName": "U_component_of_wind",
+      "parameterUnit": "m.s-1",
+      "numberPoints": 4331,
+      "gridUnits": "degrees",
+      "resolution": 48,
+      "nx": 71,
+      "ny": 61,
+      "lo1": 70,
+      "lo2": 140,
+      "la1": 60,
+      "la2": 0,
+      "dx": 1,
+      "dy": 1
+    },
+    "data": []
+  },
+  {
+    "header": {
+      "parameterCategory": 2,
+      "parameterCategoryName": "Momentum",
+      "parameterNumber": 3,
+      "parameterNumberName": "V_component_of_wind",
+      "parameterUnit": "m.s-1",
+      "numberPoints": 4331,
+      "gridUnits": "degrees",
+      "resolution": 48,
+      "nx": 71,
+      "ny": 61,
+      "lo1": 70,
+      "lo2": 140,
+      "la1": 60,
+      "la2": 0,
+      "dx": 1,
+      "dy": 1
+    },
+    "data": []
+  }
+]
