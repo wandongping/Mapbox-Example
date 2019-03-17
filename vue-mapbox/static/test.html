@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>基础地图</title>
+  <link rel="stylesheet" href="http://minedata.cn/minemapapi/v2.0.0/minemap.css">
+  <script src="http://minedata.cn/minemapapi/v2.0.0/minemap.js"></script>
+  <script src="http://minedata.cn/minemapapi/v2.0.0/plugins/earth/minemap-earth.js"></script>
+  <style>
+    html,
+    body,
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div id="map"></div>
+  <script>
+    /**
+     * 基本地图加载
+     * 地图缩放级别限制
+     */
+    minemap.accessToken = 'ae291ab75d1b42d39ca220cb136b28a4';
+    minemap.solution = 8089;
+    // var map = new minemap.Map({
+    //   container: 'map',
+    //   style: "http://minedata.cn/service/solu/style/id/8089",
+    //   center: [116.46, 39.92],
+    //   zoom: 3,
+    //   pitch: 0,
+    //   maxZoom: 17,
+    //   minZoom: 3
+    // });
+    var map = new minemap.EarthMap({
+      container: 'map',
+      style: "http://minedata.cn/service/solu/style/id/8089",
+      center: [116, 39],
+      zoom: 2,
+      pitch: 0,
+      maxZoom: 17,
+      minZoom: 1,
+      hasEarth: true,
+      earthSwitch: 5,
+      maskUrl: "http://minedata.cn/minemapapi/v2.0.0/plugins/earth/base.png",
+      backgroundUrl: "http://minedata.cn/minemapapi/v2.0.0/plugins/earth/starBackground.jpg",
+      mapTileService: "tecent"
+    });
+    map.on('load', function () {
+      map.addLayer({
+        "id": "geoserver--pbflayer",
+        "type": "line",
+        "source": {
+          "type": 'vector',
+          "scheme": "tms",
+          "tiles": [
+            "http://localhost:8008/geoserver/gwc/service/tms/1.0.0/china:china@EPSG:900913@pbf/{z}/{x}/{y}.pbf"
+          ]
+        },
+        "source-layer": "province",
+        "paint": {
+          "line-color": "#FF0000",
+          "line-opacity": 0.5
+        }
+      });
+    });
+
+  </script>
+</body>
