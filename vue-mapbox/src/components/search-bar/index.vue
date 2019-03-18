@@ -30,16 +30,18 @@ export default {
     }
   },
   methods: {
-    handleSearch (string, cb) {
-      this.$emit('on-search', string, cb)
+    handleSearch (queryString, cb) {
+      this.$emit('on-search', queryString, cb)
     },
     handleSelect (item) {
       this.$emit('on-select', item)
     },
     iconClick () {
-      if (this.searchText) this.searchText = ''
-      else this.$refs.autocomplete.focus()
-      this.$emit('on-icon-click')
+      this.$emit('on-icon-click', this.searchText)
+      if (this.searchText) {
+        this.searchText = ''
+        this.$refs.autocomplete.focus()
+      }
     }
   }
 }

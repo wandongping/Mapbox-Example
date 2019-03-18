@@ -108,7 +108,7 @@ export default {
         'type': 'vector',
         'scheme': 'tms',
         'tiles': [
-          'http://localhost:8080/geoserver/gwc/service/tms/1.0.0/china:china@EPSG:900913@pbf/{z}/{x}/{y}.pbf'
+          'http://localhost:8008/geoserver/gwc/service/tms/1.0.0/china:china@EPSG:900913@pbf/{z}/{x}/{y}.pbf'
         ]
       })
     },

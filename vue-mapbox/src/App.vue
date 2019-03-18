@@ -5,7 +5,7 @@
       :zoom="3"
       @load="mapLoaded">
     </Mapbox>
-    <search-bar @on-search="handleSearch" @on-select="handleSelect"></search-bar>
+    <search-bar @on-search="handleSearch" @on-select="handleSelect" @on-icon-click="handleIconClick"></search-bar>
   </div>
 </template>
 
@@ -36,14 +36,11 @@ export default {
         { 'value': '北京', 'code': '110000' },
         { 'value': '重庆', 'code': '500000' }
       ]
-      let results = queryString ? area.filter(this.createFilter(queryString)) : area
       // 调用 callback 返回建议列表的数据
-      callback(results)
+      callback(area)
     },
-    createFilter (queryString) {
-      return (area) => {
-        return (area.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
-      }
+    handleIconClick (queryString) {
+      if (queryString) this.$refs.map.resetMapView()
     },
     handleSelect (data) {
       const areaMap = {
