@@ -17,13 +17,15 @@ require.config({
     'bar': './components/bar',
     'ghostbox': './components/ghostbox',
     'bindedcheckbox': './components/bindedcheckbox',
-    // 'calendar': './components/calendar',
+    'calendar': './components/calendar',
   }
 });
 
 require(['map', 'bar'], function (
   Map, Bar
 ) {
-  Map.instance({});
-  Bar.instance({ });
+  return app = {
+    ui_map: Map.instance({}),
+    ui_bar: Bar.instance({}),
+  }
 });

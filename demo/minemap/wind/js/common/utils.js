@@ -1,5 +1,8 @@
 define([], function () {
-  var r = {};
+  var r = {
+    tsMinute: 6e4
+  };
+  r.tsHour = 60 * r.tsMinute;
   r.qs = function (e, t) {
     return (t || document).querySelector(e)
   };

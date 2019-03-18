@@ -32,9 +32,9 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
       });
     },
     _initSource: function () {
-      this.map.addSource("temp", {
+      this.map.addSource("nc", {
         "type": "image",
-        "url": "./data/2019030600_003.png",
+        "url": "./data/RH_2019030600_003.png",
         "coordinates": [
           [70, 60],
           [140, 60],
@@ -47,7 +47,7 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
       this.map.addLayer({
         "id": "imageLayer",
         "type": "raster",
-        "source": "temp",
+        "source": "nc",
         "layout": {
           "visibility": "visible"
         },
@@ -75,6 +75,20 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
         data: this.windVelocityData,
         map: this.map
       });
-    }
+    },
+    updateImage: function (url) {
+      // this.map.getSource('nc').updateImage({
+      //   url: url
+      // });
+      var s = this.map.getSource('nc');
+      // s.options.url = url;
+      // s.url = url;
+      s.options.url = url;
+      s.url = url;
+      s.load();
+      // s.load(s.options.coordinates, function () {
+      //   s.texture = null;
+      // });
+    },
   })
 });

@@ -1,51 +1,68 @@
-define("calendar", ["format", "utils", "class"], function (e, r, t) {
-  return t.extend({
-    weekdays: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+define(["format", "utils", "class"], function (e, r, c) {
+  return c.extend({
+    el: r.qs("#calendar"),
+    weekdays: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
     calendarHours: 240,
     numOfHours: 240,
+    forecastTime: '00', // 预测时间: 00, 12
     localeHours: e.getHoursFunction(),
     _init: function () {
-      this.midnight = this.getMidnight(),
-        this.startOfTimeline = this.startOfTimeline || this.midnight,
-        this.start = this.startOfTimeline.getTime(),
-        this.days = [],
-        this.endOfcalendar = this.add(this.startOfTimeline, this.calendarHours),
-        this.endOfCal = this.endOfcalendar.getTime(),
-        this.maxTimestamp = this.endOfcalendar.getTime(),
-        this.type = this.endOfcalendar < this.midnight ? "historical" : this.startOfTimeline < this.midnight ? "mixed" : "forecast",
-        this.timestamps = [],
-        this.paths = [],
-        this.interTimestamps = [],
-        this.minifestFile && this.createTimestampsFromMinifest(this.minifestFile) ? this.minifestValid = !0 : (this.createTimestamps(),
-          this.minifestValid = !1),
-        this.end = Math.min(this.timestamps[this.timestamps.length - 1], this.endOfCal);
-      for (var e, t, n, i, s, a = this.add(this.startOfTimeline, 12), r = 0; r < this.calendarHours / 24; r++)
-        i = this.add(this.startOfTimeline, r, "days").getTime(),
-        s = this.add(this.startOfTimeline, 24),
-        s = this.add(s, r, "days").getTime(),
-        t = (e = this.add(a, r, "days")).getTime(),
-        n = this.weekdays[e.getDay()],
-        this.days[r] = {
-          display: n + "2",
-          displayLong: n,
-          day: e.getDate(),
-          middayTs: t,
-          start: i,
-          end: s,
-          month: e.getMonth() + 1,
-          year: e.getFullYear()
-        };
-      for (r = 1; r < this.paths.length; r++)
-        this.interTimestamps.push(this.timestamps[r - 1] + Math.floor((this.timestamps[r] - this.timestamps[r - 1]) / 2));
+      this.render();
+    },
+    render: function () {
+      var e = this.getCalendar();
+      if (e) {
+        var t, n = "",
+          i = e.end,
+          s = e.days.length,
+          a = this.el.offsetWidth / s,
+          r = 100 / s;
+        if (100 < a)
+          t = this.createDayStringLong;
+        else if (60 < a)
+          t = this.createDayString;
+        else {
+          if (!(40 < a))
+            return void(this.el.innerHTML = "");
+          t = this.createDayStringShort
+        }
+        for (var o = 0; o < s; o++) {
+          var l = e.days[o];
+          n += '<div data-do="' + Math.min(l.middayTs, i) + '"\n\t\t\t\t\tclass="uiyellow' + (l.middayTs < i ? " clickable" : " disabled") + '"\n\t\t\t\t\tstyle="width: ' + r + '%;">' + l.display + ' ' + l.day + "</div>"
+        }
+        this.el.innerHTML = n
+      }
+    },
+    getCalendar: function () {
+      this.startOfTimeline = this.getStart();
+      this.start = this.startOfTimeline.getTime();
+      this.endOfcalendar = this.add(this.startOfTimeline, this.calendarHours);
+      this.end = this.endOfcalendar.getTime();
+
+      this.days = [];
+      this.timestamps = [];
+      this.paths = [];
+      this.createDays();
+      this.createTimestamps();
+
       return this
     },
-    add: function (e, t, n) {
-      var i = new Date(e.getTime());
-      return i.setTime(e.getTime() + ("days" === n ? 24 : 1) * t * r.tsHour),
+    add: function (s, n, t) {
+      var i = new Date(s.getTime());
+      return i.setTime(s.getTime() + ("days" === t ? 24 : 1) * n * r.tsHour),
         i
     },
     boundTs: function (e) {
       return r.bound(e, this.start, this.end)
+    },
+    getStart: function () {
+      var d = new Date;
+      // d.getHours() >=12 ? d.setHours(12) : d.setHours(0);
+      return d.setHours(0),
+        d.setMinutes(0),
+        d.setSeconds(0),
+        d.setMilliseconds(0),
+        d
     },
     getMidnight: function () {
       var e = new Date;
@@ -55,39 +72,36 @@ define("calendar", ["format", "utils", "class"], function (e, r, t) {
         e.setMilliseconds(0),
         e
     },
+    createDays: function () {
+      for (var a = this.add(this.startOfTimeline, 12), r = 0; r < this.calendarHours / 24; r++) {
+        var start = this.add(this.startOfTimeline, r, "days").getTime();
+        var end = this.add(this.startOfTimeline, 24).getTime();
+        var t = this.add(a, r, "days");
+        var ts = t.getTime();
+        var w = this.weekdays[t.getDay()];
+        this.days[r] = {
+          // display: w + ' ' + t.getDate(),
+          display: w,
+          day: t.getDate(),
+          middayTs: ts,
+          t: t.toLocaleString(),
+          start: start,
+          end: end,
+          month: t.getMonth() + 1,
+          year: t.getFullYear()
+        };
+      }
+    },
     createTimestamps: function () {
-      var e, t, n = this.startOfTimeline.getUTCHours() % 3;
-      for (n && (this.startOfTimeline = this.add(this.startOfTimeline, 3 - n, "hours")),
-        t = 0; t < this.numOfHours; t += 3)
-        e = this.add(this.startOfTimeline, t, "hours"),
-        this.paths.push(this.date2path(e)),
-        this.timestamps.push(e.getTime())
+      for (var r = 3; r <= this.numOfHours; r += 3) {
+        var e = this.add(this.startOfTimeline, r, "hours");
+        this.paths.push(this.date2path(e));
+        this.timestamps.push(e.getTime());
+      }
     },
-    prepareTimesFromMinifest: function (e) {
-      return e && "object" == typeof e && e.ref && e.dst ? (this.refTime = e.ref.replace(/(\d+)-(\d+)-(\d+)T(\d+):.*/, "$1$2$3$4"),
-        this.refTimeTxt = e.ref,
-        this.updateTxt = e.update,
-        this.refTimeTs = new Date(e.ref).getTime(),
-        this.updateTs = new Date(e.update).getTime(),
-        !0) : (window.wError("Calendar", "Invalid format of minifest 2.0"),
-        !1)
-    },
-    createTimestampsFromMinifest: function (e) {
-      var n = this;
-      if (!this.prepareTimesFromMinifest(e))
-        return !1;
-      var i, s = r.tsHour,
-        t = Math.min(12, this.numOfHours / 24),
-        a = this.add(this.startOfTimeline, t, "days").getTime();
-      return e.dst.forEach(function (e) {
-          for (var t = e[1]; t <= e[2]; t += e[0])
-            (i = n.refTimeTs + t * s) <= a && (n.timestamps.push(i),
-              n.paths.push(n.date2path(new Date(i))))
-        }),
-        !0
-    },
-    date2path: function (e) {
-      return e.toISOString().replace(/(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):.*/, "$1/$2/$3/$4")
+    date2path: function (t) {
+      // return e.toISOString().replace(/(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):.*/, "$1/$2/$3/$4")
+      return e.formatDate('yyyyMMdd' + this.forecastTime +'_0hh', t);
     },
     ts2path: function (e) {
       var t, n = this.interTimestamps;
