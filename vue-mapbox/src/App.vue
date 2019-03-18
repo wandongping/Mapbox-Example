@@ -5,8 +5,7 @@
       :zoom="3"
       @load="mapLoaded">
     </Mapbox>
-    <search-bar :style="{position: 'fixed', top: '10px', left: '10px'}"
-      @on-change="handleSearch"></search-bar>
+    <search-bar @on-search="handleSearch" @on-select="handleSelect"></search-bar>
   </div>
 </template>
 
@@ -32,20 +31,49 @@ export default {
     mapLoaded () {
       console.log('map loaded...')
     },
-    handleSearch (data) {
+    handleSearch (queryString, callback) {
+      let area = [
+        { 'value': '北京', 'code': '110000' },
+        { 'value': '重庆', 'code': '500000' }
+      ]
+      let results = queryString ? area.filter(this.createFilter(queryString)) : area
+      // 调用 callback 返回建议列表的数据
+      callback(results)
+    },
+    createFilter (queryString) {
+      return (area) => {
+        return (area.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
+    },
+    handleSelect (data) {
+      const areaMap = {
+        '110000': {
+          'center': [116.3671875, 40.17408860939014],
+          'bounds': [115.48828125, 39.368279149160145, 117.421875, 41.112468789180895]
+        },
+        '500000': {
+          'center': [107.75390625, 30.27717756941305],
+          'bounds': [105.29296875, 28.14950321154457, 110.21484375, 32.24997445586331]
+        }
+      }
       let code = data.code
       this.$refs.map.setFilter('province-hightlight-layer', ['==', 'DZM', code])
+      this.$refs.map.flyToCoords({center: areaMap[code].center, zoom: 6, pitch: 60})
     }
   }
 }
 </script>
 
-<style>
-* {
-  margin: 0;
-  padding: 0;
-}
-html, body, #app {
-  height: 100%;
-}
+<style lang="scss">
+  @import './assets/scss/var.scss';
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  html, body, #app {
+    height: 100%;
+  }
+  [class*=" el-icon-"], [class^=el-icon-] {
+    color: $--color-primary;
+  }
 </style>

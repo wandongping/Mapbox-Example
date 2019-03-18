@@ -5,7 +5,7 @@ import App from './App'
 import ElementUI from 'element-ui'
 
 import 'mapbox-gl/dist/mapbox-gl.css'
-import './assets/theme/index.css'
+import './assets/scss/element-variables.scss'
 
 Vue.use(ElementUI)
 

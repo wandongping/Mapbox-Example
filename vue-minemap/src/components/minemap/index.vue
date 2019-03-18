@@ -55,17 +55,7 @@ export default {
       const { token, container, solution, center, minZoom, maxZoom, zoom, pitch } = this
       minemap.accessToken = token
       minemap.solution = solution
-      const map = new minemap.Map({
-        container: container,
-        style: 'http://minedata.cn/service/solu/style/id/' + solution,
-        zoom: zoom,
-        minZoom: minZoom,
-        maxZoom: maxZoom,
-        pitch: pitch,
-        center: center,
-        logoControl: false
-      })
-      // const map = new minemap.EarthMap({
+      // const map = new minemap.Map({
       //   container: container,
       //   style: 'http://minedata.cn/service/solu/style/id/' + solution,
       //   zoom: zoom,
@@ -73,19 +63,29 @@ export default {
       //   maxZoom: maxZoom,
       //   pitch: pitch,
       //   center: center,
-      //   logoControl: false,
-      //   // 是否显示地球
-      //   hasEarth: true,
-      //   // 地球与地图切换zoom
-      //   earthSwitch: 5,
-      //   // 两级覆盖图url（解决腾讯影像两级空白）
-      //   maskUrl: 'http://minedata.cn/minemapapi/v2.0.0/plugins/earth/base.png',
-      //   // 星空背景图url
-      //   backgroundUrl: 'http://minedata.cn/minemapapi/v2.0.0/plugins/earth/starBackground.jpg',
-      //   // 栅格图服务（默认腾讯卫星影像）
-      //   // mapTileService: 'http://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}'
-      //   mapTileService: 'tecent'
+      //   logoControl: false
       // })
+      const map = new minemap.EarthMap({
+        container: container,
+        style: 'http://minedata.cn/service/solu/style/id/' + solution,
+        zoom: zoom,
+        minZoom: minZoom,
+        maxZoom: maxZoom,
+        pitch: pitch,
+        center: center,
+        logoControl: false,
+        // 是否显示地球
+        hasEarth: true,
+        // 地球与地图切换zoom
+        earthSwitch: 6,
+        // 两级覆盖图url（解决腾讯影像两级空白）
+        maskUrl: 'http://minedata.cn/minemapapi/v2.0.0/plugins/earth/base.png',
+        // 星空背景图url
+        backgroundUrl: 'http://minedata.cn/minemapapi/v2.0.0/plugins/earth/starBackground.jpg',
+        // 栅格图服务（默认腾讯卫星影像）
+        // mapTileService: 'http://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}'
+        mapTileService: 'tecent'
+      })
       map.doubleClickZoom.disable()
       map.dragRotate.disable()
       this.map = map
@@ -93,23 +93,23 @@ export default {
       this.map.on('load', () => {
         this.$emit('load')
 
-        this.map.addLayer({
-          'id': 'province-layer',
-          'type': 'fill',
-          'source': {
-            'type': 'vector',
-            'scheme': 'tms',
-            'tiles': [
-              'http://localhost:8008/geoserver/gwc/service/tms/1.0.0/china:china@EPSG:900913@pbf/{z}/{x}/{y}.pbf'
-            ]
-          },
-          'source-layer': 'province',
-          'paint': {
-            'fill-color': '#C1FFC1',
-            'fill-opacity': 0.5
-          },
-          'filter': ['==', 'DZM', '']
-        })
+        // this.map.addLayer({
+        //   'id': 'province-layer',
+        //   'type': 'fill',
+        //   'source': {
+        //     'type': 'vector',
+        //     'scheme': 'tms',
+        //     'tiles': [
+        //       'http://localhost:8080/geoserver/gwc/service/tms/1.0.0/china:china@EPSG:900913@pbf/{z}/{x}/{y}.pbf'
+        //     ]
+        //   },
+        //   'source-layer': 'province',
+        //   'paint': {
+        //     'fill-color': '#C1FFC1',
+        //     'fill-opacity': 0.5
+        //   },
+        //   'filter': ['==', 'DZM', '']
+        // })
       })
     },
     setFilter (layerName, filters) {

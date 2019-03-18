@@ -3,7 +3,7 @@
     <minemap
       ref="map"
       :zoom="3"
-      :solution="'9389'"
+      :solution="'8089'"
       @load="mapLoaded">
     </minemap>
     <search-bar :style="{position: 'fixed', top: '10px', left: '10px'}"
@@ -34,8 +34,11 @@ export default {
       console.log('map loaded...')
     },
     handleSearch (data) {
-      let code = data[0].code
-      this.$refs.map.setFilter('province-layer', ['==', 'DZM', code])
+      // let code = data[0].code
+      this.$refs.map.map.flyTo({
+        center: [108.445, 33.935],
+        zoom: 7
+      })
     }
   }
 }
