@@ -37,7 +37,7 @@ export default {
       // let code = data[0].code
       this.$refs.map.map.flyTo({
         center: [108.445, 33.935],
-        zoom: 7
+        zoom: 10
       })
     }
   }

@@ -58,10 +58,14 @@ export default {
         bearing: 0
       })
     },
+    setSCView () {
+      this.fitBounds([97.3828125, 26.115985925333533, 108.45703125, 34.30714385628805])
+    },
     /**
      * 初始化地图
      */
     async init () {
+      // 'mapbox://styles/huanglii/cjtfl5rty5x331fnrd6oi0hpn'
       const { token, container, mapStyle, center, minZoom, maxZoom, zoom, pitch } = this
       mapboxgl.accessToken = token
       const map = new mapboxgl.Map({
@@ -75,27 +79,36 @@ export default {
         logoControl: false
       })
       map.doubleClickZoom.disable()
-      // map.dragRotate.disable()
+      map.dragRotate.disable()
       this.map = map
 
       this.map.on('load', () => {
         this.$emit('load')
+        this.setSCView()
 
         this._initSource()
         this._initLayer()
       })
 
       this.mapClickEvent((e) => {
+        console.log(this.map.getZoom())
+        console.log(this.map.getCenter())
         var features = map.queryRenderedFeatures(
           e.point,
-          { layers: ['province-symbol-layer'] }
+          { layers: ['sc-symbol-layer'] }
         )
+        console.log(features)
         if (features.length > 0) {
-          // this.fitFeature(features)
-          this.map.setFilter('province-hightlight-layer', ['==', 'NAME', features[0].properties['name']])
+          let cname = features[0].properties['name']
+          let filter = ['==', 'CITYNAME', cname]
+          let fs = this.querySourceFeatures('china-source', 'sc', filter)
+          if (fs.length > 0) {
+            this.fitFeature(fs)
+            this.setFilter('sc-city-fill-layer', filter)
+          }
         } else {
-          this.resetMapView()
-          this.map.setFilter('province-hightlight-layer', ['==', 'NAME', ''])
+          this.setSCView()
+          this.setFilter('sc-city-fill-layer', ['==', 'CITYNAME', ''])
         }
       })
     },
@@ -117,64 +130,70 @@ export default {
      * 初始化图层
      */
     _initLayer (map = this.map) {
-      // 省边界
-      this.map.addLayer({
-        'id': 'province-outline-layer',
+      // 四川省市边界
+      map.addLayer({
+        'id': 'sc-city-line-layer',
         'type': 'line',
         'source': 'china-source',
-        'source-layer': 'province',
+        'source-layer': 'sc',
+        'minzoom': 4,
         'paint': {
           'line-color': '#FFFFFF',
           'line-opacity': 0.5
         }
       })
-      // 省
-      this.map.addLayer({
-        'id': 'province-layer',
+      // 四川城市
+      map.addLayer({
+        'id': 'sc-city-fill-layer',
         'type': 'fill',
         'source': 'china-source',
-        'source-layer': 'province',
+        'source-layer': 'sc',
+        'minzoom': 4,
         'paint': {
-          'fill-color': '#FFFFFF',
-          // 'fill-color': ['case',
-          //   ['<=', ['get', 'Z120610'], 10], '#56C6DA',
-          //   ['<=', ['get', 'Z120610'], 100], '#F5CB5D',
-          //   '#FF4F4D'
-          // ],
-          'fill-opacity': 0
-        }
-      })
-      // 省-高亮
-      this.map.addLayer({
-        'id': 'province-hightlight-layer',
-        'type': 'fill-extrusion',
-        'source': 'china-source',
-        'source-layer': 'province',
-        'paint': {
-          'fill-extrusion-color': '#F56C6C',
-          'fill-extrusion-height': ['*', ['get', 'Z120610'], 100],
-          'fill-extrusion-base': 10
+          'fill-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'Shape_Area'],
+            0,
+            '#409EFF',
+            2,
+            '#E6A23C'
+          ]
         },
-        'filter': ['==', 'DZM', '']
+        'filter': ['==', 'CITYNAME', '']
       })
-      // 国界线
-      this.map.addLayer({
-        'id': 'border-layer',
+      // 城市-高亮
+      // map.addLayer({
+      //   'id': 'city-hightlight-layer',
+      //   'type': 'fill-extrusion',
+      //   'source': 'china-source',
+      //   'source-layer': 'sc',
+      //   'paint': {
+      //     'fill-extrusion-color': '#F56C6C',
+      //     'fill-extrusion-height': ['*', ['get', 'Shape_Area'], 1000],
+      //     'fill-extrusion-base': 10
+      //   },
+      //   'filter': ['==', 'CITYNAME', '']
+      // })
+      // 四川省界
+      map.addLayer({
+        'id': 'sc-border-layer',
         'type': 'line',
         'source': 'china-source',
-        'source-layer': 'Border',
-        'maxzoom': 6,
+        'source-layer': 'province',
+        'minzoom': 4,
         'paint': {
           'line-color': '#F56C6C',
           'line-width': 1.5
-        }
+        },
+        'filter': ['==', 'CODE', '510000']
       })
-      // 省名称
-      this.map.addLayer({
-        'id': 'province-symbol-layer',
+      map.addLayer({
+        'id': 'sc-symbol-layer',
         'type': 'symbol',
         'source': 'china-source',
-        'source-layer': 'provincepoint',
+        'source-layer': 'sc-citypoint',
+        'minzoom': 4,
         'layout': {
           'text-field': '{name}'
         },
@@ -185,12 +204,22 @@ export default {
     },
 
     /**
+     * querySourceFeatures
+     */
+    querySourceFeatures (sourceId, sourceLayer, filter, map = this.map) {
+      return map.querySourceFeatures(sourceId, {
+        sourceLayer: sourceLayer,
+        filter: filter
+      })
+    },
+
+    /**
      * 图层过滤器
      * @param {String} layerName 图层id
-     * @param {Array} filters 过滤器
+     * @param {Array} filter 过滤器
      */
-    setFilter (layerName, filters, map = this.map) {
-      map.setFilter(layerName, filters)
+    setFilter (layerName, filter, map = this.map) {
+      map.setFilter(layerName, filter)
     },
 
     /**
@@ -201,9 +230,14 @@ export default {
       let fc = turf.featureCollection(features)
       // bbox extent in minX, minY, maxX, maxY order
       let bound = turf.bbox(fc)
-      map.fitBounds(bound, {
-        padding: {top: 10, bottom: 10, left: 10, right: 10}
-      })
+      this.fitBounds(bound)
+    },
+
+    /**
+     * fitBounds
+     */
+    fitBounds (bound, options = {padding: {top: 100, bottom: 100, left: 100, right: 100}}, map = this.map) {
+      map.fitBounds(bound, options)
     },
 
     /**

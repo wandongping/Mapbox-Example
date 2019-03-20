@@ -20,7 +20,7 @@ define(["utils", "class"], function (Utils, c) {
         this.interval = setInterval(function () {
           _.timestamp += 3600 * 1000;
           _.timestamp <= _.calendar.end ? _.set(_.timestamp): clearInterval(_.interval)
-        }, 50)
+        }, 2000)
       } else {
         clearInterval(this.interval);
       }

@@ -34,7 +34,7 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
     _initSource: function () {
       this.map.addSource("nc", {
         "type": "image",
-        "url": "./data/RH_2019030600_003.png",
+        "url": "./data/TMP_2019030600_003.png",
         "coordinates": [
           [70, 60],
           [140, 60],
@@ -85,10 +85,10 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
       // s.url = url;
       s.options.url = url;
       s.url = url;
-      s.load();
-      // s.load(s.options.coordinates, function () {
-      //   s.texture = null;
-      // });
+      // s.load();
+      s.load(s.options.coordinates, function () {
+        s.texture = null;
+      });
     },
   })
 });
