@@ -24,7 +24,7 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
         _._initSource();
         _._initLayer();
         // wind
-        Minemap.util.getJSON("./data/current-wind-surface-level-gfs-3.0.json", function (t, n) {
+        Minemap.util.getJSON("./data/WIND_2019032812_003.json", function (t, n) {
           _.windVelocityData = n || [];
           _.windVelocity.setData(n);
           _.windVelocity.drawLayer();
@@ -34,12 +34,12 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
     _initSource: function () {
       this.map.addSource("nc", {
         "type": "image",
-        "url": "./data/RH_2019030600_003.png",
+        "url": "./data/TMP_2019032812_003.png",
         "coordinates": [
-          [70, 60],
-          [140, 60],
-          [140, 0],
-          [70, 0]
+          [71, 59],
+          [139, 59],
+          [139, 1],
+          [71, 1]
         ]
       });
     },
@@ -67,6 +67,8 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
         uLineRatio: 1,
         vLineRatio: 1,
         maxVelocity: 5,
+        // 温度：'#9588d3', '#9588d3', '#9588d3', '#9588d3', '#96d0d8', '#80cbc5', '#66b3ba', '#5e8fc5', '#4f8b3d', '#79921c', '#aaa00e', '#deb106', '#f29606', '#ec5e14', '#be4112', '#8a2a0a', '#8a2a0a'
+        // 降水：'#5f587c', '#5f587c', '#5f587c', '#5f587c', '#585c8a', '#35748e', '#2b798c', '#1f8088', '#0c8b82', '#529965', '#fa9dbe', '#f8a1c0', '#f8a1c0'
         colorScale: ["rgba(0, 255, 255, 0.5)", "rgba(100, 240, 255, 0.5)", "rgba(135, 225, 255, 0.5)",
           "rgba(160, 208, 255, 0.5)", "rgba(181, 192, 255, 0.5)", "rgba(198, 173, 255, 0.5)",
           "rgba(212, 155, 255, 0.5)", "rgba(225, 133, 255, 0.5)", "rgba(236, 109, 255, 0.5)",
