@@ -34,11 +34,7 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
     _initSource: function () {
       this.map.addSource("nc", {
         "type": "image",
-<<<<<<< HEAD
-        "url": "./data/TMP_2019032812_003.png",
-=======
         "url": "./data/TMP_2019030600_003.png",
->>>>>>> 981656a35fa7910b838102a6c7f39c4cd12eb4cf
         "coordinates": [
           [71, 59],
           [139, 59],
