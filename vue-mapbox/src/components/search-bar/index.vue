@@ -37,10 +37,10 @@ export default {
       this.$emit('on-select', item)
     },
     iconClick () {
-      this.$emit('on-icon-click', this.searchText)
       if (this.searchText) {
         this.searchText = ''
         this.$refs.autocomplete.focus()
+        this.$emit('on-clear')
       }
     }
   }

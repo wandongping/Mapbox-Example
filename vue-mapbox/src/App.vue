@@ -5,7 +5,7 @@
       :zoom="3"
       @load="mapLoaded">
     </Mapbox>
-    <search-bar @on-search="handleSearch" @on-select="handleSelect" @on-icon-click="handleIconClick"></search-bar>
+    <search-bar @on-search="handleSearch" @on-select="handleSelect" @on-clear="handleClear"></search-bar>
   </div>
 </template>
 
@@ -33,29 +33,32 @@ export default {
     },
     handleSearch (queryString, callback) {
       let area = [
-        { 'value': '北京', 'code': '110000' },
-        { 'value': '重庆', 'code': '500000' }
+        { 'value': '成都市', 'code': '000000' },
+        { 'value': '德阳市', 'code': '000000' }
       ]
       // 调用 callback 返回建议列表的数据
       callback(area)
     },
-    handleIconClick (queryString) {
-      if (queryString) this.$refs.map.resetMapView()
+    handleClear () {
+      this.$refs.map.setFilter('province-hightlight-layer', ['==', 'CODE', ''])
+      this.$refs.map.resetMapView()
     },
     handleSelect (data) {
-      const areaMap = {
-        '110000': {
-          'center': [116.3671875, 40.17408860939014],
-          'bounds': [115.48828125, 39.368279149160145, 117.421875, 41.112468789180895]
-        },
-        '500000': {
-          'center': [107.75390625, 30.27717756941305],
-          'bounds': [105.29296875, 28.14950321154457, 110.21484375, 32.24997445586331]
-        }
-      }
-      let code = data.code
-      this.$refs.map.setFilter('province-hightlight-layer', ['==', 'DZM', code])
-      this.$refs.map.flyToCoords({center: areaMap[code].center, zoom: 6, pitch: 60})
+      // const areaMap = {
+      //   '510000': {
+      //     'center': [116.3671875, 40.17408860939014],
+      //     'bounds': [97.3828125, 26.115985925333533, 108.45703125, 34.30714385628805]
+      //   },
+      //   '500000': {
+      //     'center': [107.75390625, 30.27717756941305],
+      //     'bounds': [105.29296875, 28.14950321154457, 110.21484375, 32.24997445586331]
+      //   }
+      // }
+      // let code = data.code
+      // this.$refs.map.setFilter('province-hightlight-layer', ['==', 'DZM', code])
+      // this.$refs.map.flyToCoords({center: areaMap[code].center, zoom: 6, pitch: 60})
+      // let fs = this.$refs.map.querySourceFeatures('china-source', 'province', ['==', 'DZM', code])
+      // this.$refs.map.fitFeature(fs)
     }
   }
 }

@@ -77,7 +77,7 @@ export default {
         // 是否显示地球
         hasEarth: true,
         // 地球与地图切换zoom
-        earthSwitch: 6,
+        earthSwitch: 5.2,
         // 两级覆盖图url（解决腾讯影像两级空白）
         maskUrl: 'http://minedata.cn/minemapapi/v2.0.0/plugins/earth/base.png',
         // 星空背景图url
@@ -100,15 +100,15 @@ export default {
         //     'type': 'vector',
         //     'scheme': 'tms',
         //     'tiles': [
-        //       'http://localhost:8080/geoserver/gwc/service/tms/1.0.0/china:china@EPSG:900913@pbf/{z}/{x}/{y}.pbf'
+        //       'http://localhost:8008/geoserver/gwc/service/tms/1.0.0/china:china@EPSG:900913@pbf/{z}/{x}/{y}.pbf'
         //     ]
         //   },
         //   'source-layer': 'province',
         //   'paint': {
         //     'fill-color': '#C1FFC1',
         //     'fill-opacity': 0.5
-        //   },
-        //   'filter': ['==', 'DZM', '']
+        //   }
+        //   // 'filter': ['==', 'DZM', '']
         // })
       })
     },
