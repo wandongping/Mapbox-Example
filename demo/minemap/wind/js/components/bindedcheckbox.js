@@ -18,9 +18,9 @@ define(["utils", "class"], function (Utils, c) {
       if (this.play) {
         var _ = this;
         this.interval = setInterval(function () {
-          _.timestamp += 3600 * 1000;
+          _.timestamp += 3600 * 3 * 1000;
           _.timestamp <= _.calendar.end ? _.set(_.timestamp): clearInterval(_.interval)
-        }, 2000)
+        }, 1000)
       } else {
         clearInterval(this.interval);
       }

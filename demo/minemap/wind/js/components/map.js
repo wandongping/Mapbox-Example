@@ -1,6 +1,7 @@
 define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, Config, c) {
   return c.extend({
     map: undefined,
+    windUrl: './data/WIND_2019031000_003.json',
     windVelocity: undefined,
     windVelocityData: [],
     _init: function () {
@@ -29,6 +30,7 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
           _.windVelocity.setData(n);
           _.windVelocity.drawLayer();
         });
+        // _.updateWindData();
       });
     },
     _initSource: function () {
@@ -52,7 +54,7 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
           "visibility": "visible"
         },
         "paint": {
-          "raster-opacity": 0.25
+          "raster-opacity": 1
         }
       });
       Velocity.initVelocityComponent(this.map);
@@ -77,6 +79,15 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
         data: this.windVelocityData,
         map: this.map
       });
+      this.windVelocity.drawLayer();
+    },
+    updateWindData: function () {
+      console.log(this.windUrl);
+      var _ = this;
+      Minemap.util.getJSON(this.windUrl, function (t, n) {
+        _.windVelocityData = n || [];
+        _.windVelocity.setData(n);
+      });
     },
     updateImage: function (url) {
       // this.map.getSource('nc').updateImage({
@@ -92,5 +103,8 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
         s.texture = null;
       });
     },
+    toggleWindLayer: function () {
+      
+    }
   })
 });

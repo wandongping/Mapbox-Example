@@ -1,12 +1,18 @@
-define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "class"], function (Utils, Drag, BindedCheckbox, GhostBox, Calendar, c) {
+define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "overlay", "class"], function (Utils, Drag, BindedCheckbox, GhostBox, Calendar, Overlay, c) {
   return c.extend(Drag, BindedCheckbox, GhostBox, {
     offset: 45, // timecode offset
     borderOffset: 10,
-    jumpingWidth: 140,
+    hours: [],
+    type: 'TMP',
+    windOn: true,
     _init: function () {
       this.calendar = Calendar.instance();
       this.left = 0;
       this.numberOfHours = 240;
+      this.step = 3;
+      for (let i = 0; i <= 24; i += this.step) {
+        this.hours.push(i)
+      }
       this.progressBar = Utils.qs("#progress-bar");
       this.progressWidth = this.progressBar.offsetWidth - this.offset;
       this.pxRatio = this.progressWidth / (this.calendar.end - this.calendar.start);
@@ -24,6 +30,7 @@ define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "class"], fun
       GhostBox._init.call(this);
       Drag._init.call(this);
       BindedCheckbox._init.call(this);
+      Overlay._init.call(this);
     },
     addAnimation: function () {
       this.progressBar.classList.add("anim-allowed")
@@ -53,10 +60,27 @@ define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "class"], fun
         this.bcast();
         this.removeAnimation();
       }
-      app.ui_map.updateImage('./data/RH_2019030600_003.png')
+      // app.ui_map.updateImage('./data/RH_2019030600_003.png')
+    },
+    overlayClick: function (t) {
+      console.log(t);
+      this.type = t;
+      if (t != 'WIND') {
+        var i = Utils.qs('.selected', this.overlay)
+          , s = this.getOverlayEl(t);
+        i && i.classList.remove('selected'),
+        s && s.classList.add('selected');
+      } else {
+        var i = Utils.qs('.checkbox', this.overlay);
+        this.windOn ? i.classList.add('off') : i.classList.remove('off');
+        this.windOn = !this.windOn;
+      }
+    },
+    getOverlayEl: function(e) {
+      return Utils.qs('*[data-do="' + e + '"]', this.overlay)
     },
     ondrag: function (e) {
-      // 有 bug
+      // 有 bug, 先不支持拖拽
       // this.update(e + 20 - this.offset);
       // this.throttledBcast()
     },
@@ -67,11 +91,16 @@ define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "class"], fun
         this.removeAnimation()
     },
     update: function (e) {
-      return this.left = Utils.bound(e, 0, this.maxWidth),
-        this.timecode.style.left = this.left + this.offset + "px",
-        this.text.textContent = this.createText(this.text),
-        this.played && (this.played.style.width = this.left + "px"),
-        this.left
+      this.left = Utils.bound(e, 0, this.maxWidth);
+      this.timecode.style.left = this.left + this.offset + "px";
+      this.text.textContent = this.createText(this.text);
+      this.played && (this.played.style.width = this.left + "px");
+      this.updateData(e);
+      return this.left
+    },
+    updateData: function (e) {
+      var i = this.displayDataIndex(Math.round(this.numberOfHours * this.left / this.progressWidth))
+      console.log(this.calendar.paths[i]);
     },
     updateGhost: function (e) {
       var t = Utils.bound(e.clientX - this.offset - this.borderOffset, 0, this.maxWidth);
@@ -90,7 +119,11 @@ define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "class"], fun
       return this.displayHour(t)
     },
     displayHour: function (h, m) {
-      return h + ":" + (null != m ? r.pad(m) : "00")
+      i = Math.floor((h + this.step / 2) / this.step);
+      return this.hours[i] + ":" + (null != m ? Utils.pad(m) : "00")
+    },
+    displayDataIndex: function (h) {
+      return Math.floor((h + this.step / 2) / this.step) - 1
     }
   })
 });

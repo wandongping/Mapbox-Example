@@ -10,7 +10,24 @@
 
 <body>
   <div id="map"></div>
-
+  <div id="overlay" class="menu iconsize-16">
+    <a data-do="TMP" class="selected">
+      <div class="iconfont"></div>
+      <div class="menu-text">温度</div>
+    </a>
+    <a data-do="RH">
+      <div class="iconfont">/</div>
+      <div class="menu-text">湿度</div>
+    </a>
+    <a data-do="APCP">
+      <div class="iconfont">9</div>
+      <div class="menu-text">降水</div>
+    </a>
+    <a data-do="WIND">
+      <div class="checkbox"></div>
+      <div class="menu-text">风场</div>
+    </a>
+  </div>
   <div id="bottom" class="shy left-border right-border bottom-border" style="margin-right: 40px;">
     <div id="progress-bar" class="progress-bar">
       <div class="progress-line">

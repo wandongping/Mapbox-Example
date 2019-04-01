@@ -18,6 +18,7 @@ require.config({
     'ghostbox': './components/ghostbox',
     'bindedcheckbox': './components/bindedcheckbox',
     'calendar': './components/calendar',
+    'overlay': './components/overlay'
   }
 });
 
