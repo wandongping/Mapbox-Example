@@ -76,6 +76,7 @@ define([
           , s = this.getOverlayEl(t);
         i && i.classList.remove('selected'),
         s && s.classList.add('selected');
+        this.mapEl.toggleImgData(t);
       } else {
         var i = Utils.qs('.checkbox', this.overlay);
         this.windOn ? i.classList.add('off') : i.classList.remove('off');

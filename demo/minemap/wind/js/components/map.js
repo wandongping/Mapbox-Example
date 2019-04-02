@@ -1,6 +1,7 @@
 define(['minemap', 'velocity', 'config', 'broadcast', 'class'], function (Minemap, Velocity, Config, e, c) {
   return c.extend({
     map: undefined,
+    imgType: 'TMP',
     windUrl: './data/WIND_2019031000_003.json',
     windVelocity: undefined,
     windVelocityData: [],
@@ -28,31 +29,14 @@ define(['minemap', 'velocity', 'config', 'broadcast', 'class'], function (Minema
         _._initSource();
         _._initLayer();
         e.emit('mapload', 22222222222);
-        // wind
-        // Minemap.util.getJSON("./data/WIND_2019032812_003.json", function (t, n) {
-        //   _.windVelocityData = n || [];
-        //   _.windVelocity.setData(n);
-        //   _.windVelocity.drawLayer();
-        // });
-        // _.updateWindData();
       });
     },
     _initSource: function () {
-      // this.map.addSource("nc", {
-      //   "type": "image",
-      //   "url": "./data/TMP_2019030600_003.png",
-      //   "coordinates": [
-      //     [71, 59],
-      //     [139, 59],
-      //     [139, 1],
-      //     [71, 1]
-      //   ]
-      // });
-      this._initWeatherTmpSource();
+      this._initWeatherSource();
     },
-    _initWeatherTmpSource: function () {
-      for (var t = 3; t <= 120; t = t + 3)
-        this.map.addSource('tmp' + t, {
+    _initWeatherSource: function () {
+      for (var t = 3; t <= 120; t = t + 3) {
+        this.map.addSource('TMP' + t, {
           type: 'image',
           url: './data/TMP/TMP_2019032812_' + t.toString().padStart(3, '0') + '.jpg',
           coordinates: [
@@ -61,10 +45,21 @@ define(['minemap', 'velocity', 'config', 'broadcast', 'class'], function (Minema
             [139, 1],
             [71, 1]
           ]
-        })
+        });
+        this.map.addSource('APCP' + t, {
+          type: 'image',
+          url: './data/APCP/APCP_2019032812_' + t.toString().padStart(3, '0') + '.jpg',
+          coordinates: [
+            [71, 59],
+            [139, 59],
+            [139, 1],
+            [71, 1]
+          ]
+        });
+      }
     },
     _initLayer: function () {
-      this._initWeatherTmpLayers();
+      this._initWeatherLayers();
 
       // 风场
       Velocity.initVelocityComponent(this.map);
@@ -91,26 +86,37 @@ define(['minemap', 'velocity', 'config', 'broadcast', 'class'], function (Minema
       });
       this.windVelocity.drawLayer();
     },
-    _initWeatherTmpLayers: function () {
+    _initWeatherLayers: function () {
       for (var t = 3; t <= 120; t = t + 3) {
         this.map.addLayer({
-          "id": "tmp" + t,
+          "id": "TMP" + t,
           "type": "raster",
-          "source": "tmp" + t,
+          "source": "TMP" + t,
           "layout": {
             "visibility": "visible"
           },
           "paint": {
-            "raster-opacity": .5
+            "raster-opacity": .8
           }
-        }, this.bid)
+        }, this.bid);
+        this.map.addLayer({
+          "id": "APCP" + t,
+          "type": "raster",
+          "source": "APCP" + t,
+          "layout": {
+            "visibility": "visible"
+          },
+          "paint": {
+            "raster-opacity": .8
+          }
+        }, this.bid);
       }
     },
     update: function (path) {
       var t = path.split('_')[1];
       this.windUrl = './data/WIND/WIND_2019032812_' + t + '.json';
       this.updateWindData();
-      this.updateTmpData(t - 0);
+      this.updateImgData(t - 0);
     },
     /**
      * 更新风场
@@ -124,10 +130,15 @@ define(['minemap', 'velocity', 'config', 'broadcast', 'class'], function (Minema
       });
     },
     // 更新图片
-    updateTmpData: function (n) {
-      this.map.moveLayer('tmp' + this.num, this.bid);
+    updateImgData: function (n) {
+      this.map.moveLayer(this.imgType + this.num, this.bid);
       this.num = n;
-      this.map.moveLayer('tmp' + n, this.aid);
+      this.map.moveLayer(this.imgType + n, this.aid);
+    },
+    toggleImgData: function (type) {
+      this.map.moveLayer(this.imgType + this.num, this.bid);
+      this.imgType = type;
+      this.map.moveLayer(type + this.num, this.aid);
     }
   })
 });
