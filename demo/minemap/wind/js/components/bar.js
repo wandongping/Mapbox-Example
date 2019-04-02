@@ -1,4 +1,6 @@
-define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "overlay", "class"], function (Utils, Drag, BindedCheckbox, GhostBox, Calendar, Overlay, c) {
+define([
+  "utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "overlay", "map", "broadcast", "class"
+], function (Utils, Drag, BindedCheckbox, GhostBox, Calendar, Overlay, Map, e, c) {
   return c.extend(Drag, BindedCheckbox, GhostBox, {
     offset: 45, // timecode offset
     borderOffset: 10,
@@ -6,9 +8,10 @@ define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "overlay", "c
     type: 'TMP',
     windOn: true,
     _init: function () {
+      this.mapEl = Map.instance({});
       this.calendar = Calendar.instance();
       this.left = 0;
-      this.numberOfHours = 240;
+      this.numberOfHours = 120;
       this.step = 3;
       for (let i = 0; i <= 24; i += this.step) {
         this.hours.push(i)
@@ -26,11 +29,14 @@ define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "overlay", "c
       this.ghost = Utils.qs(".ghost-timecode", this.progressBar);
       this.ghostTxt = Utils.qs(".box", this.ghost);
       this.timestamp = this.calendar.start;
-      this.set(new Date().getTime());
       GhostBox._init.call(this);
       Drag._init.call(this);
       BindedCheckbox._init.call(this);
       Overlay._init.call(this);
+      var _ = this;
+      e.on('mapload', function (params) {
+        _.set(new Date().getTime());
+      })
     },
     addAnimation: function () {
       this.progressBar.classList.add("anim-allowed")
@@ -100,7 +106,8 @@ define(["utils", "drag", "bindedcheckbox", "ghostbox", "calendar", "overlay", "c
     },
     updateData: function (e) {
       var i = this.displayDataIndex(Math.round(this.numberOfHours * this.left / this.progressWidth))
-      console.log(this.calendar.paths[i]);
+      var path = this.calendar.paths[i];
+      this.mapEl.update(path)
     },
     updateGhost: function (e) {
       var t = Utils.bound(e.clientX - this.offset - this.borderOffset, 0, this.maxWidth);

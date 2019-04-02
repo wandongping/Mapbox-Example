@@ -9,6 +9,8 @@ require.config({
     'minemap': 'http://minedata.cn/minemapapi/v2.0.0/minemap',
     'velocity': 'http://minedata.cn/minemapapi/v2.0.0/plugins/wind/velocity',
     'config': './common/config',
+    'event': './common/event',
+    'broadcast': './common/broadcast',
     'class': './common/class',
     'utils': './common/utils',
     'format': './common/format',
@@ -26,7 +28,7 @@ require(['map', 'bar'], function (
   Map, Bar
 ) {
   return app = {
-    ui_map: Map.instance({}),
-    ui_bar: Bar.instance({}),
+    // mapEl: Map.instance({}),
+    barEl: Bar.instance({}),
   }
 });
