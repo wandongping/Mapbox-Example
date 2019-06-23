@@ -1,9 +1,13 @@
-define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, Config, c) {
+define(['minemap', 'velocity', 'config', 'broadcast', 'class'], function (Minemap, Velocity, Config, e, c) {
   return c.extend({
     map: undefined,
+    imgType: 'TMP',
     windUrl: './data/WIND_2019031000_003.json',
     windVelocity: undefined,
     windVelocityData: [],
+    num: 3,
+    bid: 'fe519a18dec04c5fb65e0a53c9e25771', // 背景图层
+    aid: '8e1115b0249740308a4d7ff2f0684134', // 国界图层
     _init: function () {
       Minemap.accessToken = Config.TK;
       Minemap.solution = Config.SOLUTION;
@@ -24,39 +28,40 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
       this.map.on('load', function () {
         _._initSource();
         _._initLayer();
-        // wind
-        Minemap.util.getJSON("./data/WIND_2019032812_003.json", function (t, n) {
-          _.windVelocityData = n || [];
-          _.windVelocity.setData(n);
-          _.windVelocity.drawLayer();
-        });
-        // _.updateWindData();
+        e.emit('mapload', 22222222222);
       });
     },
     _initSource: function () {
-      this.map.addSource("nc", {
-        "type": "image",
-        "url": "./data/TMP_2019030600_003.png",
-        "coordinates": [
-          [71, 59],
-          [139, 59],
-          [139, 1],
-          [71, 1]
-        ]
-      });
+      this._initWeatherSource();
+    },
+    _initWeatherSource: function () {
+      for (var t = 3; t <= 120; t = t + 3) {
+        this.map.addSource('TMP' + t, {
+          type: 'image',
+          url: './data/TMP/TMP_2019032812_' + t.toString().padStart(3, '0') + '.jpg',
+          coordinates: [
+            [71, 59],
+            [139, 59],
+            [139, 1],
+            [71, 1]
+          ]
+        });
+        this.map.addSource('APCP' + t, {
+          type: 'image',
+          url: './data/APCP/APCP_2019032812_' + t.toString().padStart(3, '0') + '.jpg',
+          coordinates: [
+            [71, 59],
+            [139, 59],
+            [139, 1],
+            [71, 1]
+          ]
+        });
+      }
     },
     _initLayer: function () {
-      this.map.addLayer({
-        "id": "imageLayer",
-        "type": "raster",
-        "source": "nc",
-        "layout": {
-          "visibility": "visible"
-        },
-        "paint": {
-          "raster-opacity": 1
-        }
-      });
+      this._initWeatherLayers();
+
+      // 风场
       Velocity.initVelocityComponent(this.map);
       this.windVelocity = new Velocity({
         canvas: document.getElementById("windcanvas"),
@@ -81,30 +86,59 @@ define(['minemap', 'velocity', 'config', 'class'], function (Minemap, Velocity, 
       });
       this.windVelocity.drawLayer();
     },
+    _initWeatherLayers: function () {
+      for (var t = 3; t <= 120; t = t + 3) {
+        this.map.addLayer({
+          "id": "TMP" + t,
+          "type": "raster",
+          "source": "TMP" + t,
+          "layout": {
+            "visibility": "visible"
+          },
+          "paint": {
+            "raster-opacity": .8
+          }
+        }, this.bid);
+        this.map.addLayer({
+          "id": "APCP" + t,
+          "type": "raster",
+          "source": "APCP" + t,
+          "layout": {
+            "visibility": "visible"
+          },
+          "paint": {
+            "raster-opacity": .8
+          }
+        }, this.bid);
+      }
+    },
+    update: function (path) {
+      var t = path.split('_')[1];
+      this.windUrl = './data/WIND/WIND_2019032812_' + t + '.json';
+      this.updateWindData();
+      this.updateImgData(t - 0);
+    },
+    /**
+     * 更新风场
+     */
     updateWindData: function () {
       console.log(this.windUrl);
       var _ = this;
-      Minemap.util.getJSON(this.windUrl, function (t, n) {
+      Minemap.util.getJSON(_.windUrl, function (t, n) {
         _.windVelocityData = n || [];
         _.windVelocity.setData(n);
       });
     },
-    updateImage: function (url) {
-      // this.map.getSource('nc').updateImage({
-      //   url: url
-      // });
-      var s = this.map.getSource('nc');
-      // s.options.url = url;
-      // s.url = url;
-      s.options.url = url;
-      s.url = url;
-      // s.load();
-      s.load(s.options.coordinates, function () {
-        s.texture = null;
-      });
+    // 更新图片
+    updateImgData: function (n) {
+      this.map.moveLayer(this.imgType + this.num, this.bid);
+      this.num = n;
+      this.map.moveLayer(this.imgType + n, this.aid);
     },
-    toggleWindLayer: function () {
-      
+    toggleImgData: function (type) {
+      this.map.moveLayer(this.imgType + this.num, this.bid);
+      this.imgType = type;
+      this.map.moveLayer(type + this.num, this.aid);
     }
   })
 });

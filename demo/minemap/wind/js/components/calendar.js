@@ -2,8 +2,8 @@ define(["format", "utils", "class"], function (e, r, c) {
   return c.extend({
     el: r.qs("#calendar"),
     weekdays: ["周日", "周一", "周二", "周三", "周四", "周五", "周六"],
-    calendarHours: 240,
-    numOfHours: 240,
+    calendarHours: 120,
+    numOfHours: 120,
     forecastTime: '00', // 预测时间: 00, 12
     localeHours: e.getHoursFunction(),
     _init: function () {
@@ -101,7 +101,9 @@ define(["format", "utils", "class"], function (e, r, c) {
     },
     date2path: function (t) {
       // return e.toISOString().replace(/(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):.*/, "$1/$2/$3/$4")
-      return e.formatDate('yyyyMMdd' + this.forecastTime +'_0hh', t);
+      var n = (t.getTime() - this.start) / 1000 / 3600
+      return '2019032812_' + n.toString().padStart('3', '0')
+      // return e.formatDate('yyyyMMdd' + this.forecastTime +'_0hh', t);
     },
     ts2path: function (e) {
       var t, n = this.interTimestamps;
